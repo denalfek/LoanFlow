@@ -8,8 +8,9 @@ services:
     ports:
       - "5100:8080"
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Database=loanflow;Username=loanuser;Password=loanpass"
+      ASPNETCORE_ENVIRONMENT: Production
+      Database__ConnectionString: "Host=postgres;Database=loanflow;Username=loanuser;Password=loanpass"
+      Database__AutoMigrate: "false"
       RabbitMQ__Host: rabbitmq
       RabbitMQ__Username: guest
       RabbitMQ__Password: guest
