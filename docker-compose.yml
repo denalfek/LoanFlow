@@ -3,7 +3,7 @@ version: '3.8'
 services:
   loanflow-api:
     build:
-      context: ./src/LoanFlow.Api
+      context: .
       dockerfile: Dockerfile
     ports:
       - "5100:8080"
