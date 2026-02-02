@@ -9,6 +9,8 @@ var databaseSettings = builder.Services.AddDatabaseSettings(builder.Configuratio
 builder.Services.AddRabbitMQSettings(builder.Configuration);
 
 builder.Services.AddInfrastructure(databaseSettings);
+builder.Services.AddScoped<DbSeeder>();
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -22,9 +24,13 @@ if (app.Environment.IsDevelopment())
         using var scope = app.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<LoanFlowDbContext>();
         await dbContext.Database.MigrateAsync();
+
+        var seeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
+        await seeder.SeedAsync();
     }
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
 
 app.Run();
