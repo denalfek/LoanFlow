@@ -1,3 +1,4 @@
+using LoanFlow.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LoanFlow.Infrastructure.Data;
@@ -8,6 +9,8 @@ public class LoanFlowDbContext : DbContext
         : base(options)
     {
     }
+
+    public DbSet<Loan> Loans => Set<Loan>();
 
     public override int SaveChanges()
     {
