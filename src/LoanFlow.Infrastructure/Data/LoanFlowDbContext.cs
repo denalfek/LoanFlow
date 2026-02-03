@@ -12,6 +12,13 @@ public class LoanFlowDbContext : DbContext
 
     public DbSet<Loan> Loans => Set<Loan>();
 
+    public DbSet<LoanApplication> LoanApplications => Set<LoanApplication>();
+
+    public DbSet<Applicant> Applicants => Set<Applicant>();
+
+    public DbSet<LoanDecision> LeansDecisions => Set<LoanDecision>();
+
+
     public override int SaveChanges()
     {
         ApplyAuditFields();
