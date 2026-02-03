@@ -1,4 +1,5 @@
 using LoanFlow.Configuration;
+using LoanFlow.Domain.Entities;
 using LoanFlow.Infrastructure;
 using LoanFlow.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,6 @@ builder.Services.AddRabbitMQSettings(builder.Configuration);
 
 builder.Services.AddInfrastructure(databaseSettings);
 builder.Services.AddScoped<DbSeeder>();
-builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -31,6 +31,26 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapControllers();
+
+app.MapGet("/api/loans", async (LoanFlowDbContext db) =>
+    await db.Loans.Where(l => !l.Deleted).ToListAsync());
+
+app.MapGet("/api/loans/{id:guid}", async (Guid id, LoanFlowDbContext db) =>
+    await db.Loans.FirstOrDefaultAsync(l => l.Id == id && !l.Deleted)
+        is { } loan ? Results.Ok(loan) : Results.NotFound());
+
+app.MapPost("/api/applicants", async (Applicant applicant, LoanFlowDbContext db) =>
+{
+    db.Applicants.Add(applicant);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/applicants/{applicant.Id}", applicant);
+});
+
+app.MapGet("/api/applicants/by-email/{email}", async (string email, LoanFlowDbContext db) =>
+    await db.Applicants.FirstOrDefaultAsync(a => a.Email == email && !a.Deleted)
+        is { } applicant ? Results.Ok(applicant) : Results.NotFound());
+
+app.MapGet("/api/applicants/exists", async (string email, LoanFlowDbContext db) =>
+    Results.Ok(new { exists = await db.Applicants.AnyAsync(a => a.Email == email && !a.Deleted) }));
 
 app.Run();
