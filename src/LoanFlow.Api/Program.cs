@@ -3,6 +3,7 @@ using LoanFlow.Configuration;
 using LoanFlow.Domain.Entities;
 using LoanFlow.Infrastructure;
 using LoanFlow.Infrastructure.Data;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -86,5 +87,74 @@ app.MapGet("/api/applicants/by-email/{email}", async (string email, LoanFlowDbCo
 
 app.MapGet("/api/applicants/exists", async (string email, LoanFlowDbContext db) =>
     Results.Ok(new { exists = await db.Applicants.AnyAsync(a => a.Email == email && !a.Deleted) }));
+
+app.MapPost("/api/loan-applications", async (LoanApplicationRequest request, LoanFlowDbContext db) =>
+{
+    var applicant = await db.Applicants.FindAsync(request.ApplicantId);
+    if (applicant is null)
+        return Results.NotFound("Applicant not found");
+
+    var application = new LoanApplication
+    {
+        ApplicantId = request.ApplicantId,
+        Amount = request.Amount,
+        Purpose = request.Purpose,
+        Status = LoanApplicationStatus.Submitted,
+        Submitted = DateTime.UtcNow,
+        Applicant = applicant
+    };
+
+    db.LoanApplications.Add(application);
+    await db.SaveChangesAsync();
+
+    var response = new LoanApplicationResponse(
+        application.Id,
+        application.ApplicantId,
+        application.Amount,
+        application.Purpose,
+        application.Status,
+        application.Submitted,
+        application.Created);
+
+    return Results.Created($"/api/loan-applications/{application.Id}", response);
+});
+
+// GET - List all loan applications
+app.MapGet("/api/loan-applications", async (LoanFlowDbContext db) =>
+{
+    var applications = await db.LoanApplications
+        .Where(la => !la.Deleted)
+        .ToListAsync();
+
+    return applications.Select(a => new LoanApplicationResponse(
+        a.Id,
+        a.ApplicantId,
+        a.Amount,
+        a.Purpose,
+        a.Status,
+        a.Submitted,
+        a.Created));
+});
+
+// GET - Get loan application by ID
+app.MapGet("/api/loan-applications/{id:guid}", async (Guid id, LoanFlowDbContext db) =>
+{
+    var application = await db.LoanApplications
+        .FirstOrDefaultAsync(la => la.Id == id && !la.Deleted);
+
+    if (application is null)
+        return Results.NotFound();
+
+    var response = new LoanApplicationResponse(
+        application.Id,
+        application.ApplicantId,
+        application.Amount,
+        application.Purpose,
+        application.Status,
+        application.Submitted,
+        application.Created);
+
+    return Results.Ok(response);
+});
 
 app.Run();
