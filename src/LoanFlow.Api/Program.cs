@@ -1,3 +1,4 @@
+using LoanFlow.Api.Models;
 using LoanFlow.Configuration;
 using LoanFlow.Domain.Entities;
 using LoanFlow.Infrastructure;
@@ -39,16 +40,49 @@ app.MapGet("/api/loans/{id:guid}", async (Guid id, LoanFlowDbContext db) =>
     await db.Loans.FirstOrDefaultAsync(l => l.Id == id && !l.Deleted)
         is { } loan ? Results.Ok(loan) : Results.NotFound());
 
-app.MapPost("/api/applicants", async (Applicant applicant, LoanFlowDbContext db) =>
+app.MapPost("/api/applicants", async (ApplicantRequest request, LoanFlowDbContext db) =>
 {
+    var applicant = new Applicant
+    {
+        FirstName = request.FirstName,
+        LastName = request.LastName,
+        Email = request.Email,
+        DateOfBirth = request.DateOfBirth,
+        MonthlyIncome = request.MonthlyIncome
+    };
+
     db.Applicants.Add(applicant);
     await db.SaveChangesAsync();
-    return Results.Created($"/api/applicants/{applicant.Id}", applicant);
+
+    var response = new ApplicantResponse(
+        applicant.Id,
+        applicant.FirstName,
+        applicant.LastName,
+        applicant.Email,
+        applicant.DateOfBirth,
+        applicant.MonthlyIncome,
+        applicant.Created);
+
+    return Results.Created($"/api/applicants/{applicant.Id}", response);
 });
 
 app.MapGet("/api/applicants/by-email/{email}", async (string email, LoanFlowDbContext db) =>
-    await db.Applicants.FirstOrDefaultAsync(a => a.Email == email && !a.Deleted)
-        is { } applicant ? Results.Ok(applicant) : Results.NotFound());
+{
+    var applicant = await db.Applicants.FirstOrDefaultAsync(a => a.Email == email && !a.Deleted);
+    if (applicant is null)
+        return Results.NotFound();
+
+    var response = new ApplicantResponse(
+        applicant.Id,
+        applicant.FirstName,
+        applicant.LastName,
+        applicant.Email,
+        applicant.DateOfBirth,
+        applicant.MonthlyIncome,
+        applicant.Created);
+
+    return Results.Ok(response);
+});
 
 app.MapGet("/api/applicants/exists", async (string email, LoanFlowDbContext db) =>
     Results.Ok(new { exists = await db.Applicants.AnyAsync(a => a.Email == email && !a.Deleted) }));
