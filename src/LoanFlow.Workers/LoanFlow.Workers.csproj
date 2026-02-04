@@ -1,24 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-LoanFlow.Workers-8c9ea13e-8f7e-4bf3-8efe-c7e07391bf49</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.12" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.12" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LoanFlow.Domain\LoanFlow.Domain.csproj" />
-    <ProjectReference Include="..\LoanFlow.Configuration\LoanFlow.Configuration.csproj" />
     <ProjectReference Include="..\LoanFlow.Infrastructure\LoanFlow.Infrastructure.csproj" />
     <ProjectReference Include="..\LoanFlow.Contracts\LoanFlow.Contracts.csproj" />
+    <ProjectReference Include="..\LoanFlow.Configuration\LoanFlow.Configuration.csproj" />
   </ItemGroup>
-
 </Project>
