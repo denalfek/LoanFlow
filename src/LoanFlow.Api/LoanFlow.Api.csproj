@@ -23,6 +23,7 @@
     <ProjectReference Include="..\LoanFlow.Domain\LoanFlow.Domain.csproj" />
     <ProjectReference Include="..\LoanFlow.Configuration\LoanFlow.Configuration.csproj" />
     <ProjectReference Include="..\LoanFlow.Infrastructure\LoanFlow.Infrastructure.csproj" />
+    <ProjectReference Include="..\LoanFlow.Contracts\LoanFlow.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -14,6 +14,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanFlow.Infrastructure", "src\LoanFlow.Infrastructure\LoanFlow.Infrastructure.csproj", "{D69DE0B5-BE03-412F-A19B-CDA7A6A98931}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanFlow.Contracts", "src\LoanFlow.Contracts\LoanFlow.Contracts.csproj", "{6276EF19-DB12-4492-BC5E-4B60C3099BDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoanFlow.Workers", "src\LoanFlow.Workers\LoanFlow.Workers.csproj", "{1403BC8E-DA00-4929-A936-D5148351C0B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +98,8 @@ Global
 		{9A0AC9DE-58DB-4112-B313-7DB16C3E05D4} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{628B2DCA-1FEE-4B3E-9433-8D3FC4D21348} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{D69DE0B5-BE03-412F-A19B-CDA7A6A98931} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{6276EF19-DB12-4492-BC5E-4B60C3099BDD} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{1403BC8E-DA00-4929-A936-D5148351C0B8} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF6BFE6C-6509-4473-9C3E-C44E3AD839B5}

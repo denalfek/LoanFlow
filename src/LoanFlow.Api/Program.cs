@@ -1,8 +1,10 @@
 using LoanFlow.Api.Models;
 using LoanFlow.Configuration;
+using LoanFlow.Contracts.Events;
 using LoanFlow.Domain.Entities;
 using LoanFlow.Infrastructure;
 using LoanFlow.Infrastructure.Data;
+using LoanFlow.Infrastructure.Messaging;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +15,7 @@ builder.Services.AddRabbitMQSettings(builder.Configuration);
 
 builder.Services.AddInfrastructure(databaseSettings);
 builder.Services.AddScoped<DbSeeder>();
+builder.Services.AddSingleton<IMessagePublisher, RabbitMQPublisher>();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -88,7 +91,7 @@ app.MapGet("/api/applicants/by-email/{email}", async (string email, LoanFlowDbCo
 app.MapGet("/api/applicants/exists", async (string email, LoanFlowDbContext db) =>
     Results.Ok(new { exists = await db.Applicants.AnyAsync(a => a.Email == email && !a.Deleted) }));
 
-app.MapPost("/api/loan-applications", async (LoanApplicationRequest request, LoanFlowDbContext db) =>
+app.MapPost("/api/loan-applications", async (LoanApplicationRequest request, LoanFlowDbContext db, IMessagePublisher publisher) =>
 {
     var applicant = await db.Applicants.FindAsync(request.ApplicantId);
     if (applicant is null)
@@ -106,6 +109,16 @@ app.MapPost("/api/loan-applications", async (LoanApplicationRequest request, Loa
 
     db.LoanApplications.Add(application);
     await db.SaveChangesAsync();
+
+    // Publish event for background processing
+    var evt = new LoanSubmittedEvent(
+        application.Id,
+        application.ApplicantId,
+        application.Amount,
+        application.Purpose,
+        application.Submitted);
+
+    await publisher.PublishAsync(evt, "loan.submitted");
 
     var response = new LoanApplicationResponse(
         application.Id,
