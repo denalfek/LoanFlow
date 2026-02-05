@@ -55,7 +55,7 @@ public class RabbitMQPublisher : IMessagePublisher, IAsyncDisposable
             if (_channel is { IsOpen: true })
                 return;
 
-            var factory = CreateConnectionFactory();
+            var factory = RabbitMQConnectionFactory.Create(_settings);
 
             _connection = await factory.CreateConnectionAsync(cancellationToken);
             _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
@@ -71,28 +71,6 @@ public class RabbitMQPublisher : IMessagePublisher, IAsyncDisposable
         {
             _semaphore.Release();
         }
-    }
-
-    private ConnectionFactory CreateConnectionFactory()
-    {
-        // If ConnectionString (URI) is provided, use it
-        if (!string.IsNullOrWhiteSpace(_settings.ConnectionString))
-        {
-            return new ConnectionFactory
-            {
-                Uri = new Uri(_settings.ConnectionString)
-            };
-        }
-
-        // Otherwise, use individual properties for backward compatibility
-        return new ConnectionFactory
-        {
-            HostName = _settings.Host,
-            Port = _settings.Port,
-            UserName = _settings.Username,
-            Password = _settings.Password,
-            VirtualHost = _settings.VirtualHost
-        };
     }
 
     public async ValueTask DisposeAsync()
