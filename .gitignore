@@ -3,3 +3,13 @@
 .vs
 *.user
 .idea/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Sensitive data
+*.pfx
+*.p12
+secrets.json

@@ -1,0 +1,65 @@
+services:
+  loanflow.api:
+    image: ${DOCKER_REGISTRY-}loanflowapi
+    build:
+      context: .
+      dockerfile: LoanFlow/Dockerfile
+    ports:
+      - "5100:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Database__ConnectionString: ${PROD_DATABASE_CONNECTION_STRING}
+      Database__AutoMigrate: ${PROD_DATABASE_AUTO_MIGRATE:-false}
+      Database__EnableSensitiveDataLogging: "false"
+      Database__CommandTimeout: "60"
+      RabbitMQ__Host: ${PROD_RABBITMQ_HOST}
+      RabbitMQ__Port: ${PROD_RABBITMQ_PORT:-5672}
+      RabbitMQ__Username: ${PROD_RABBITMQ_USERNAME}
+      RabbitMQ__Password: ${PROD_RABBITMQ_PASSWORD}
+      RabbitMQ__VirtualHost: ${PROD_RABBITMQ_VIRTUALHOST:-/}
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  loanflow.worker:
+    image: ${DOCKER_REGISTRY-}loanflow-worker
+    build:
+      context: .
+      dockerfile: LoanFlow.Workers/Dockerfile
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      Database__ConnectionString: ${PROD_DATABASE_CONNECTION_STRING}
+      Database__AutoMigrate: ${PROD_DATABASE_AUTO_MIGRATE:-false}
+      Database__EnableSensitiveDataLogging: "false"
+      Database__CommandTimeout: "60"
+      RabbitMQ__Host: ${PROD_RABBITMQ_HOST}
+      RabbitMQ__Port: ${PROD_RABBITMQ_PORT:-5672}
+      RabbitMQ__Username: ${PROD_RABBITMQ_USERNAME}
+      RabbitMQ__Password: ${PROD_RABBITMQ_PASSWORD}
+      RabbitMQ__VirtualHost: ${PROD_RABBITMQ_VIRTUALHOST:-/}
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: loanflow
+      POSTGRES_USER: loanuser
+      POSTGRES_PASSWORD: loanpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+volumes:
+  postgres_data:
