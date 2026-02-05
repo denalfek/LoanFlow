@@ -7,6 +7,6 @@ public record LoanApplicationResponse(
     Guid ApplicantId,
     decimal Amount,
     string Purpose,
-    LoanApplicationStatus Status,
+    string Status,
     DateTime Submitted,
     DateTime Created);
