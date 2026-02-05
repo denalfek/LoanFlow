@@ -1,0 +1,25 @@
+services:
+  loanflow.api:
+    image: ${DOCKER_REGISTRY-}loanflowapi
+    build:
+      context: .
+      dockerfile: LoanFlow/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Database__ConnectionString: ${DATABASE_URL}
+      Database__AutoMigrate: "false"
+      RabbitMQ__ConnectionString: ${RABBITMQ_URL}
+    restart: unless-stopped
+
+  loanflow.worker:
+    image: ${DOCKER_REGISTRY-}loanflow-worker
+    build:
+      context: .
+      dockerfile: LoanFlow.Workers/Dockerfile
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      Database__ConnectionString: ${DATABASE_URL}
+      RabbitMQ__ConnectionString: ${RABBITMQ_URL}
+    restart: unless-stopped
