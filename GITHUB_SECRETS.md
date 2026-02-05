@@ -28,15 +28,11 @@ These secrets configure the PostgreSQL database connection for production:
 
 ### Production RabbitMQ Configuration
 
-These secrets configure the RabbitMQ message broker for production:
+This secret configures the RabbitMQ message broker for production using AMQP URI format:
 
 | Secret Name | Description | Example Value |
 |------------|-------------|---------------|
-| `PROD_RABBITMQ_HOST` | RabbitMQ server hostname | `rabbitmq.example.com` or Azure Service Bus endpoint |
-| `PROD_RABBITMQ_PORT` | RabbitMQ server port | `5672` (default AMQP port) |
-| `PROD_RABBITMQ_USERNAME` | RabbitMQ username | `loanflow_prod` |
-| `PROD_RABBITMQ_PASSWORD` | RabbitMQ password | `<secure-password>` |
-| `PROD_RABBITMQ_VIRTUALHOST` | RabbitMQ virtual host | `/` (default) or `/loanflow-prod` |
+| `PROD_RABBITMQ_CONNECTION_STRING` | RabbitMQ connection string in AMQP URI format | `amqp://username:password@rabbitmq.example.com:5672/` or `amqps://your-namespace.servicebus.windows.net` (for Azure Service Bus) |
 
 ## Setting Up Secrets
 
@@ -62,11 +58,7 @@ gh secret set PROD_DATABASE_CONNECTION_STRING --body "your-connection-string"
 gh secret set PROD_DATABASE_AUTO_MIGRATE --body "false"
 
 # RabbitMQ Configuration
-gh secret set PROD_RABBITMQ_HOST --body "your-rabbitmq-host"
-gh secret set PROD_RABBITMQ_PORT --body "5672"
-gh secret set PROD_RABBITMQ_USERNAME --body "your-rabbitmq-username"
-gh secret set PROD_RABBITMQ_PASSWORD --body "your-rabbitmq-password"
-gh secret set PROD_RABBITMQ_VIRTUALHOST --body "/"
+gh secret set PROD_RABBITMQ_CONNECTION_STRING --body "amqp://username:password@host:5672/"
 ```
 
 ## Security Best Practices

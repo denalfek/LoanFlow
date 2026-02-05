@@ -12,11 +12,7 @@ services:
       Database__AutoMigrate: ${PROD_DATABASE_AUTO_MIGRATE:-false}
       Database__EnableSensitiveDataLogging: "false"
       Database__CommandTimeout: "60"
-      RabbitMQ__Host: ${PROD_RABBITMQ_HOST}
-      RabbitMQ__Port: ${PROD_RABBITMQ_PORT:-5672}
-      RabbitMQ__Username: ${PROD_RABBITMQ_USERNAME}
-      RabbitMQ__Password: ${PROD_RABBITMQ_PASSWORD}
-      RabbitMQ__VirtualHost: ${PROD_RABBITMQ_VIRTUALHOST:-/}
+      RabbitMQ__ConnectionString: ${PROD_RABBITMQ_CONNECTION_STRING}
     depends_on:
       - postgres
       - rabbitmq
@@ -32,11 +28,7 @@ services:
       Database__AutoMigrate: ${PROD_DATABASE_AUTO_MIGRATE:-false}
       Database__EnableSensitiveDataLogging: "false"
       Database__CommandTimeout: "60"
-      RabbitMQ__Host: ${PROD_RABBITMQ_HOST}
-      RabbitMQ__Port: ${PROD_RABBITMQ_PORT:-5672}
-      RabbitMQ__Username: ${PROD_RABBITMQ_USERNAME}
-      RabbitMQ__Password: ${PROD_RABBITMQ_PASSWORD}
-      RabbitMQ__VirtualHost: ${PROD_RABBITMQ_VIRTUALHOST:-/}
+      RabbitMQ__ConnectionString: ${PROD_RABBITMQ_CONNECTION_STRING}
     depends_on:
       - postgres
       - rabbitmq

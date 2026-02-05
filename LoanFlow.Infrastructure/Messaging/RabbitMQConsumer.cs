@@ -69,14 +69,7 @@ public abstract class RabbitMQConsumer<TMessage> : BackgroundService where TMess
 
     private async Task InitializeAsync(CancellationToken cancellationToken)
     {
-        var factory = new ConnectionFactory
-        {
-            HostName = _settings.Host,
-            Port = _settings.Port,
-            UserName = _settings.Username,
-            Password = _settings.Password,
-            VirtualHost = _settings.VirtualHost
-        };
+        var factory = CreateConnectionFactory();
 
         _connection = await factory.CreateConnectionAsync(cancellationToken);
         _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
@@ -103,6 +96,28 @@ public abstract class RabbitMQConsumer<TMessage> : BackgroundService where TMess
 
         _logger.LogInformation("Bound queue {QueueName} to exchange {Exchange} with routing key {RoutingKey}",
             QueueName, ExchangeName, RoutingKey);
+    }
+
+    private ConnectionFactory CreateConnectionFactory()
+    {
+        // If ConnectionString (URI) is provided, use it
+        if (!string.IsNullOrWhiteSpace(_settings.ConnectionString))
+        {
+            return new ConnectionFactory
+            {
+                Uri = new Uri(_settings.ConnectionString)
+            };
+        }
+
+        // Otherwise, use individual properties for backward compatibility
+        return new ConnectionFactory
+        {
+            HostName = _settings.Host,
+            Port = _settings.Port,
+            UserName = _settings.Username,
+            Password = _settings.Password,
+            VirtualHost = _settings.VirtualHost
+        };
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
