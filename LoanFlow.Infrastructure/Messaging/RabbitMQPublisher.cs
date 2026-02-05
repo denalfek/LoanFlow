@@ -55,14 +55,7 @@ public class RabbitMQPublisher : IMessagePublisher, IAsyncDisposable
             if (_channel is { IsOpen: true })
                 return;
 
-            var factory = new ConnectionFactory
-            {
-                HostName = _settings.Host,
-                Port = _settings.Port,
-                UserName = _settings.Username,
-                Password = _settings.Password,
-                VirtualHost = _settings.VirtualHost
-            };
+            var factory = RabbitMQConnectionFactory.Create(_settings);
 
             _connection = await factory.CreateConnectionAsync(cancellationToken);
             _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);

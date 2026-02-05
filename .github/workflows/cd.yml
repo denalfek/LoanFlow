@@ -92,3 +92,35 @@ jobs:
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Configure App Settings
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          app-settings-json: |
+            [
+              {
+                "name": "ASPNETCORE_ENVIRONMENT",
+                "value": "Production"
+              },
+              {
+                "name": "Database__ConnectionString",
+                "value": "${{ secrets.PROD_DATABASE_CONNECTION_STRING }}"
+              },
+              {
+                "name": "Database__AutoMigrate",
+                "value": "${{ secrets.PROD_DATABASE_AUTO_MIGRATE }}"
+              },
+              {
+                "name": "Database__EnableSensitiveDataLogging",
+                "value": "false"
+              },
+              {
+                "name": "Database__CommandTimeout",
+                "value": "60"
+              },
+              {
+                "name": "RabbitMQ__ConnectionString",
+                "value": "${{ secrets.PROD_RABBITMQ_CONNECTION_STRING }}"
+              }
+            ]

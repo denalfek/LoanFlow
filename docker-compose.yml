@@ -10,9 +10,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       Database__ConnectionString: "Host=postgres;Database=loanflow;Username=loanuser;Password=loanpass"
       Database__AutoMigrate: "true"
-      RabbitMQ__Host: rabbitmq
-      RabbitMQ__Username: guest
-      RabbitMQ__Password: guest
+      RabbitMQ__ConnectionString: "amqp://guest:guest@rabbitmq:5672/"
     depends_on:
       - postgres
       - rabbitmq
@@ -25,9 +23,7 @@ services:
     environment:
       DOTNET_ENVIRONMENT: Development
       Database__ConnectionString: "Host=postgres;Database=loanflow;Username=loanuser;Password=loanpass"
-      RabbitMQ__Host: rabbitmq
-      RabbitMQ__Username: guest
-      RabbitMQ__Password: guest
+      RabbitMQ__ConnectionString: "amqp://guest:guest@rabbitmq:5672/"
     depends_on:
       - postgres
       - rabbitmq
