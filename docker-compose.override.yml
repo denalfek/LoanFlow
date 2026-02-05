@@ -1,30 +1,15 @@
 services:
-  loanflow-api:
-    image: loanflow-api:dev
+  loanflow.api:
+    image: ${DOCKER_REGISTRY-}loanflowapi
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: LoanFlow/Dockerfile
     ports:
       - "5100:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       Database__ConnectionString: "Host=postgres;Database=loanflow;Username=loanuser;Password=loanpass"
       Database__AutoMigrate: "true"
-      RabbitMQ__Host: rabbitmq
-      RabbitMQ__Username: guest
-      RabbitMQ__Password: guest
-    depends_on:
-      - postgres
-      - rabbitmq
-
-  loanflow-worker:
-    image: loanflow-worker:dev
-    build:
-      context: .
-      dockerfile: src/LoanFlow.Workers/Dockerfile
-    environment:
-      DOTNET_ENVIRONMENT: Development
-      Database__ConnectionString: "Host=postgres;Database=loanflow;Username=loanuser;Password=loanpass"
       RabbitMQ__Host: rabbitmq
       RabbitMQ__Username: guest
       RabbitMQ__Password: guest

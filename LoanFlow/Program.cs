@@ -5,29 +5,43 @@ using LoanFlow.Domain.Entities;
 using LoanFlow.Infrastructure;
 using LoanFlow.Infrastructure.Data;
 using LoanFlow.Infrastructure.Messaging;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+
 var databaseSettings = builder.Services.AddDatabaseSettings(builder.Configuration);
-builder.Services.AddRabbitMQSettings(builder.Configuration);
 
 builder.Services.AddInfrastructure(databaseSettings);
 builder.Services.AddScoped<DbSeeder>();
+
+builder.Services.AddRabbitMQSettings(builder.Configuration);
 builder.Services.AddSingleton<IMessagePublisher, RabbitMQPublisher>();
-builder.Services.AddOpenApi();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+if (app.Environment.IsDevelopment())
+{
+    // app.MapOpenApi();
 
     if (databaseSettings.AutoMigrate)
     {
         using var scope = app.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<LoanFlowDbContext>();
+        var dbContext = scope.ServiceProvider
+            .GetRequiredService<LoanFlowDbContext>();
+        
         await dbContext.Database.MigrateAsync();
 
         var seeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
@@ -37,8 +51,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapGet("/api/hc", () =>
+{
+    return Results.Ok("I'm healthy ^_^");
+});
+
 app.MapGet("/api/loans", async (LoanFlowDbContext db) =>
-    await db.Loans.Where(l => !l.Deleted).ToListAsync());
+{
+    var test = await db.Loans.Where(l => !l.Deleted).ToListAsync();
+
+    return Results.Ok(test);
+});
 
 app.MapGet("/api/loans/{id:guid}", async (Guid id, LoanFlowDbContext db) =>
     await db.Loans.FirstOrDefaultAsync(l => l.Id == id && !l.Deleted)
@@ -125,7 +148,7 @@ app.MapPost("/api/loan-applications", async (LoanApplicationRequest request, Loa
         application.ApplicantId,
         application.Amount,
         application.Purpose,
-        application.Status,
+        application.Status.ToString(),
         application.Submitted,
         application.Created);
 
@@ -144,7 +167,7 @@ app.MapGet("/api/loan-applications", async (LoanFlowDbContext db) =>
         a.ApplicantId,
         a.Amount,
         a.Purpose,
-        a.Status,
+        a.Status.ToString(),
         a.Submitted,
         a.Created));
 });
@@ -163,7 +186,7 @@ app.MapGet("/api/loan-applications/{id:guid}", async (Guid id, LoanFlowDbContext
         application.ApplicantId,
         application.Amount,
         application.Purpose,
-        application.Status,
+        application.Status.ToString(),
         application.Submitted,
         application.Created);
 

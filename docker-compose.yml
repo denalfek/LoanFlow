@@ -1,9 +1,9 @@
 services:
-  loanflow-api:
-    image: loanflow-api:dev
+  loanflow.api:
+    image: ${DOCKER_REGISTRY-}loanflowapi
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: LoanFlow/Dockerfile
     ports:
       - "5100:8080"
     environment:
@@ -17,11 +17,11 @@ services:
       - postgres
       - rabbitmq
 
-  loanflow-worker:
-    image: loanflow-worker:dev
+  loanflow.worker:
+    image: ${DOCKER_REGISTRY-}loanflow-worker
     build:
       context: .
-      dockerfile: src/LoanFlow.Workers/Dockerfile
+      dockerfile: LoanFlow.Workers/Dockerfile
     environment:
       DOTNET_ENVIRONMENT: Development
       Database__ConnectionString: "Host=postgres;Database=loanflow;Username=loanuser;Password=loanpass"
