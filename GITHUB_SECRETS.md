@@ -86,10 +86,16 @@ gh secret set PROD_RABBITMQ_VIRTUALHOST --body "/"
 - Configured via `docker-compose.yml` with development credentials
 - No secrets required
 
-### Production
+### Production (Azure Deployment)
 - Uses `appsettings.Production.json` as base
 - Overridden by environment variables set from GitHub secrets
 - All sensitive data comes from GitHub secrets
+
+### Production (Docker Compose)
+- Uses `docker-compose.production.yml`
+- Requires environment variables to be set (see `.env.example`)
+- Can use `.env` file locally or environment variables in deployment
+- PostgreSQL and RabbitMQ credentials are also configured via environment variables
 
 ## Troubleshooting
 

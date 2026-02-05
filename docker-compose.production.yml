@@ -44,9 +44,9 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: loanflow
-      POSTGRES_USER: loanuser
-      POSTGRES_PASSWORD: loanpass
+      POSTGRES_DB: ${PROD_POSTGRES_DB:-loanflow}
+      POSTGRES_USER: ${PROD_POSTGRES_USER:-loanuser}
+      POSTGRES_PASSWORD: ${PROD_POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -58,8 +58,8 @@ services:
       - "5672:5672"   # AMQP
       - "15672:15672" # Management UI
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${PROD_RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${PROD_RABBITMQ_PASSWORD}
 
 volumes:
   postgres_data:
